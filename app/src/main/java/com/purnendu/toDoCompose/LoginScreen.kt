@@ -17,21 +17,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.purnendu.toDoCompose.viewmodel.LoginScreenViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-private var mobileNo by mutableStateOf("")
-private var isMobileNumberError by mutableStateOf(false)
-private var mobileNoErrorMessage by mutableStateOf("")
-
-private var otp1 by mutableStateOf("")
-private var otp2 by mutableStateOf("")
-private var otp3 by mutableStateOf("")
-private var otp4 by mutableStateOf("")
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun LoginScreen(navController: NavController) {
+fun LoginScreen(navController: NavController,viewModel: LoginScreenViewModel= LoginScreenViewModel()) {
 
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)
@@ -46,14 +39,15 @@ fun LoginScreen(navController: NavController) {
                     .fillMaxWidth()
                     .height(200.dp)
             ) {
-                BottomSheetContent(navController)
+                BottomSheetContent(navController, viewModel = viewModel)
             }
         }, sheetPeekHeight = 0.dp
     ) {
         ContentLogin(
             navController = navController,
             coroutineScope = coroutineScope,
-            bottomSheetScaffoldState = bottomSheetScaffoldState
+            bottomSheetScaffoldState = bottomSheetScaffoldState,
+            viewModel = viewModel
         )
     }
 
@@ -65,7 +59,8 @@ fun LoginScreen(navController: NavController) {
 fun ContentLogin(
     navController: NavController,
     coroutineScope: CoroutineScope,
-    bottomSheetScaffoldState: BottomSheetScaffoldState
+    bottomSheetScaffoldState: BottomSheetScaffoldState,
+    viewModel: LoginScreenViewModel
 ) {
     Column(
         modifier = Modifier
@@ -99,14 +94,14 @@ fun ContentLogin(
         Spacer(modifier = Modifier.height(10.dp))
 
         CustomTextField(
-            text = mobileNo,
+            text = viewModel.mobileNo,
             labelContent = "Mobile No",
-            isError = isMobileNumberError,
-            errorMessage = mobileNoErrorMessage,
+            isError = viewModel.isMobileNumberError,
+            errorMessage = viewModel.mobileNoErrorMessage,
             keyboardType = KeyboardType.Phone
         )
         {
-            mobileNo = it
+            viewModel.mobileNo = it
         }
 
         Text(
@@ -124,17 +119,9 @@ fun ContentLogin(
             colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xff74b9ff)),
             enabled = !bottomSheetScaffoldState.bottomSheetState.isExpanded,
             onClick = {
-                if (mobileNo.isEmpty()) {
-                    isMobileNumberError = true
-                    mobileNoErrorMessage = "Required Field"
+
+                if (!viewModel.validateMobileNo())
                     return@Button
-                }
-                if (!validatePhoneNumber(mobileNo)) {
-                    isMobileNumberError = true
-                    mobileNoErrorMessage = "Not a valid Mobile Number"
-                    return@Button
-                }
-                isMobileNumberError = false
 
                 coroutineScope.launch {
 
@@ -154,7 +141,7 @@ fun ContentLogin(
 }
 
 @Composable
-fun BottomSheetContent(navController: NavController) {
+fun BottomSheetContent(navController: NavController,viewModel: LoginScreenViewModel) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -168,43 +155,32 @@ fun BottomSheetContent(navController: NavController) {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            SingleOTPField(modifier = Modifier.weight(1f), otp = otp1)
+            SingleOTPField(modifier = Modifier.weight(1f), otp = viewModel.otp1)
             {
-                otp1 = it
+                viewModel.otp1 = it
             }
             Spacer(modifier = Modifier.width(2.dp))
-            SingleOTPField(modifier = Modifier.weight(1f), otp = otp2)
+            SingleOTPField(modifier = Modifier.weight(1f), otp = viewModel.otp2)
             {
-                otp2 = it
+                viewModel. otp2 = it
             }
             Spacer(modifier = Modifier.width(2.dp))
-            SingleOTPField(modifier = Modifier.weight(1f), otp = otp3)
+            SingleOTPField(modifier = Modifier.weight(1f), otp = viewModel.otp3)
             {
-                otp3 = it
+                viewModel. otp3 = it
             }
             Spacer(modifier = Modifier.width(2.dp))
-            SingleOTPField(modifier = Modifier.weight(1f), otp = otp4)
+            SingleOTPField(modifier = Modifier.weight(1f), otp = viewModel.otp4)
             {
-                otp4 = it
+                viewModel.otp4 = it
             }
         }
         Spacer(modifier = Modifier.width(5.dp))
         Button(
             onClick = {
-                if (otp1.isEmpty()) {
-                    Toast.makeText(context, "Enter OTP", Toast.LENGTH_SHORT).show()
-                    return@Button
-                }
-                if (otp2.isEmpty()) {
-                    Toast.makeText(context, "Enter OTP", Toast.LENGTH_SHORT).show()
-                    return@Button
-                }
-                if (otp3.isEmpty()) {
-                    Toast.makeText(context, "Enter OTP", Toast.LENGTH_SHORT).show()
-                    return@Button
-                }
-                if (otp4.isEmpty()) {
-                    Toast.makeText(context, "Enter OTP", Toast.LENGTH_SHORT).show()
+                if(!viewModel.validateOTP())
+                {
+                    Toast.makeText(context, "OTP required", Toast.LENGTH_SHORT).show()
                     return@Button
                 }
                 navController.navigate("home_screen") {

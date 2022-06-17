@@ -12,9 +12,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.purnendu.toDoCompose.viewmodel.AddTaskScreenViewModel
 
 @Composable
-fun AddTaskScreen(navController: NavController,listIndex:Int=-1) {
+fun AddTaskScreen(navController: NavController, viewModel: AddTaskScreenViewModel) {
 
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -33,50 +34,32 @@ fun AddTaskScreen(navController: NavController,listIndex:Int=-1) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-
-            val task=(if (listIndex==-1) "" else listOfTask[listIndex].task)
-            val dueDate=(if (listIndex==-1) "" else listOfTask[listIndex].dueDate)
-            var desc by remember { mutableStateOf(task) }
-            var date by remember { mutableStateOf(dueDate) }
-
             Text(
                 text = "Add Your Task",
                 fontSize = 30.sp,
             )
             TextField(
                 modifier = Modifier.fillMaxWidth(),
-                value = desc,
-                onValueChange = { desc = it },
+                value = viewModel.desc,
+                onValueChange = { viewModel.desc = it },
                 placeholder = { Text(text = "Task") }
             )
             Spacer(modifier = Modifier.height(5.dp))
             TextField(
                 modifier = Modifier.fillMaxWidth(),
-                value = date,
-                onValueChange = { date = it },
+                value = viewModel.date,
+                onValueChange = { viewModel.date = it },
                 placeholder = { Text(text = "Due date") },
             )
             Spacer(modifier = Modifier.height(5.dp))
             Button(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {
-                    if(listIndex==-1)
-                    {
-                        if (desc.isNotEmpty() && date.isNotEmpty()) {
-                            listOfTask.add(Task(desc, date))
-                        }
-                    }
-                    else
-                    {
-                        if (desc.isNotEmpty() && date.isNotEmpty()) {
-                            listOfTask[listIndex].task = desc
-                            listOfTask[listIndex].dueDate = date
-                        }
-                    }
+                    viewModel.addTask()
                     navController.navigateUp()
                 }
             ) {
-                Text(if(listIndex==-1) "Add" else "Update")
+                Text(if (viewModel.index == -1) "Add" else "Update")
             }
 
 

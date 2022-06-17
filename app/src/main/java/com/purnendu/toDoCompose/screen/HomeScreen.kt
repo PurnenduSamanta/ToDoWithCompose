@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.purnendu.toDoCompose.utility.listOfTask
 
 @Composable
 fun HomeScreen(navController: NavController) {
@@ -52,8 +53,6 @@ fun HomeScreen(navController: NavController) {
     }
 
 
-
-
 }
 
 @Composable
@@ -64,6 +63,7 @@ fun GridLayout(
     LazyVerticalGrid(
         modifier = modifier,
         columns = GridCells.Fixed(2),
+        reverseLayout = true
     )
     {
 

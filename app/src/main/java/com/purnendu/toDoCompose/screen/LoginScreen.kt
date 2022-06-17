@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun LoginScreen(navController: NavController,viewModel: LoginScreenViewModel= LoginScreenViewModel()) {
+fun LoginScreen(navController: NavController,viewModel: LoginScreenViewModel) {
 
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)

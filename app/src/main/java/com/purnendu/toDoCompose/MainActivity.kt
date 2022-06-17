@@ -14,6 +14,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.purnendu.toDoCompose.ui.theme.ToDoTheme
+import com.purnendu.toDoCompose.viewmodel.AddTaskScreenViewModel
+import com.purnendu.toDoCompose.viewmodel.LoginScreenViewModel
+import com.purnendu.toDoCompose.viewmodel.SignUpViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,11 +46,11 @@ class MainActivity : ComponentActivity() {
             }
             composable(route = "logIn_screen")
             {
-                LoginScreen(navController = navController)
+                LoginScreen(navController = navController, viewModel = LoginScreenViewModel())
             }
             composable(route = "signUp_screen")
             {
-                SignUpScreen(navController = navController)
+                SignUpScreen(navController = navController, viewModel = SignUpViewModel())
             }
 
             composable(route = "home_screen")
@@ -68,7 +71,7 @@ class MainActivity : ComponentActivity() {
                 it.arguments?.let { it1 ->
                    AddTaskScreen(
                         navController = navController,
-                        listIndex = it1.getInt("index")
+                        viewModel = AddTaskScreenViewModel(it1.getInt("index"))
                     )
                 }
             }
